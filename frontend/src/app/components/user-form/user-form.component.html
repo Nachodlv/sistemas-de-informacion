@@ -1,0 +1,41 @@
+<div id="user-form">
+  <h1>Nuevo Usuario</h1>
+  <form (ngSubmit)="submitForm()" [formGroup]="registerForm" class="row">
+    <div class="col-md-7">
+      <div class="form-group">
+        <label for="nameInput">Nombre</label>
+        <input type="text" class="form-control" id="nameInput" formControlName="name"
+               [ngClass]="{'is-invalid': isInputInvalid('required', 'name')}" required>
+        <div class="invalid-feedback" *ngIf="isInputInvalid('required', 'name')">
+          El nombre es requerido
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="passwordInput">Contraseña</label>
+        <input type="password" class="form-control" id="passwordInput" formControlName="password"
+               [ngClass]="{'is-invalid': isInputInvalid('minlength', 'password') || isInputInvalid('required', 'password')}"
+               required>
+        <div class="invalid-feedback"
+             *ngIf="isInputInvalid('minlength', 'password') || isInputInvalid('required', 'password')">
+          La contraseña debe tener por lo menos seis carácteres de largo
+        </div>
+        <label for="repeatPasswordInput">Repetir contraseña</label>
+        <input type="password" class="form-control" id="repeatPasswordInput" formControlName="repeatPassword"
+               [ngClass]="{'is-invalid': isRepeatedPasswordInvalid()}" required>
+        <div class="invalid-feedback" *ngIf="isRepeatedPasswordInvalid()">
+          Las contraseñas deben ser iguales
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="roleSelect">Rol</label>
+        <select class="form-control" id="roleSelect" formControlName="role">
+          <option *ngFor="let role of userRoleTypes" [value]="role">{{userRoles[role]}}</option>
+        </select>
+      </div>
+    </div>
+    <div id="button-container" class="col-12 pt-5">
+      <button type="reset" class="btn btn-danger">Cancelar</button>
+      <button type="submit" class="btn btn-primary" [disabled]="registerForm.invalid">Crear Usuario</button>
+    </div>
+  </form>
+</div>
