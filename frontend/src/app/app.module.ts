@@ -14,6 +14,7 @@ import {ModalModule} from 'ngx-bootstrap/modal';
 // Extras
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {HttpClientModule} from '@angular/common/http';
+import {AlertModule} from './alerts';
 
 
 @NgModule({
@@ -36,6 +37,7 @@ import {HttpClientModule} from '@angular/common/http';
     FormsModule,
     ReactiveFormsModule,
     HttpClientModule,
+    AlertModule
   ],
   providers: [],
   bootstrap: [AppComponent]

@@ -2,6 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {UserService} from '../../services/user.service';
 import {UserRole} from '../../models/user-model';
+import {AlertService} from '../../alerts';
 
 @Component({
   selector: 'app-user-form',
@@ -14,7 +15,7 @@ export class UserFormComponent implements OnInit {
   public userRoleTypes: string[] = Object.values(UserRole);
   public userRoles = UserRole;
 
-  constructor(private formBuilder: FormBuilder, private userService: UserService) {
+  constructor(private formBuilder: FormBuilder, private userService: UserService, private alertService: AlertService) {
   }
 
   ngOnInit(): void {
@@ -34,6 +35,9 @@ export class UserFormComponent implements OnInit {
 
   submitForm(): void {
     this.registerForm.markAllAsTouched();
+    if (this.registerForm.valid) {
+      this.alertService.success('Success!', {autoClose: true});
+    }
   }
 
   isInputInvalid(error: string, name: string): boolean {
