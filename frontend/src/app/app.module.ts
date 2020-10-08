@@ -22,7 +22,7 @@ import { NgxSpinnerModule } from 'ngx-bootstrap-spinner';
   declarations: [
     // App Components
     AppComponent,
-    UserFormComponent
+    UserFormComponent,
   ],
   imports: [
 
