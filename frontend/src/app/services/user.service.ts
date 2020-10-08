@@ -3,21 +3,22 @@ import {CachedReplaySubject} from './storage/CachedReplaySubject';
 import {User, UserCreationForm} from '../models/user-model';
 import {Observable, of} from 'rxjs';
 import {HttpService} from './http.service';
+import {map, switchMap} from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
 })
 export class UserService {
 
-  private usersCached = new CachedReplaySubject<User>();
+  private url = '/user';
+  private usersCached = new CachedReplaySubject<string, User>();
 
   constructor(private http: HttpService) {
   }
 
   save(userForm: UserCreationForm): Observable<User> {
-    // TODO make backend request
-    const user = new User('1', userForm.name, userForm.role);
-    this.usersCached.set(user.id, user);
-    return of(user);
+    return this.http.post(this.url, userForm).pipe(
+      map(response => User.fromJson(response.body)),
+      switchMap(user => this.usersCached.addValue(user.id, user)));
   }
 }

@@ -1,61 +1,45 @@
 ﻿﻿import {Observable, ReplaySubject, Subject} from 'rxjs';
 import {filter, startWith, switchMap, tap} from 'rxjs/operators';
 
-export class CachedReplaySubject<T> {
+export class CachedReplaySubject<U extends { toString(): string }, T> {
 
-  protected replaySubject = new Map<string, ReplaySubject<T>>();
+  protected replaySubject = new Map<U, ReplaySubject<T>>();
+  private allReplaySubjects = new ReplaySubject<T[]>();
+  private elements: T[] = [];
+  private gotAll = false;
 
-  constructor(private saveInStorage: boolean = false, private localStorageKey: string = '') {
-  }
-
-  get(key: string, request: () => Observable<T>): Observable<T> {
+  get(key: U, request: () => Observable<T>): Observable<T> {
     if (this.replaySubject.has(key)) {
       return this.replaySubject.get(key).asObservable();
     }
     const reloader$ = new ReplaySubject<T>();
     this.replaySubject.set(key, reloader$);
-    const cache = this.saveInStorage && this.tryToGetFromCache(key);
-    if (cache) {
-      reloader$.next(cache);
-    } else {
-      request().pipe(tap(data => {
-        if (this.saveInStorage) {
-          this.set(key, data);
-        }
-      })).subscribe(t => reloader$.next(t));
-    }
+    request().pipe(tap(t => {
+      this.elements.push(t);
+    })).subscribe(t => reloader$.next(t));
     return reloader$.asObservable().pipe(filter(data => !!data));
   }
 
-  set(key: string, model: T): void {
-    localStorage.setItem(this.getKeyForModel(key), JSON.stringify(new CacheModel(model)));
-  }
-
-  tryToGetFromCache(key: string): T | undefined {
-    const cache = CacheModel.fromJson<T>(localStorage.getItem(this.getKeyForModel(key)));
-    return cache && cache.isValid() ? cache.model : undefined;
-  }
-
-  protected getKeyForModel(key: string): string {
-    return this.localStorageKey + '\0' + key;
-  }
-}
-
-export class CacheModel<T> {
-
-  constructor(public model: T, public timeStamp: number = new Date().getTime()) {
-  }
-
-  MAX_CACHE_TIME = 21600 * 1000; // TODO needs to ignore serialization
-
-  static fromJson<T>(json: string): CacheModel<T> {
-    if (json) {
-      const parsed = JSON.parse(json);
-      return new CacheModel<T>(parsed.model, parsed.timeStamp);
+  addValue(key: U, t: T): Observable<T> {
+    let replaySubject: ReplaySubject<T>;
+    if (this.replaySubject.has(key)) {
+      replaySubject = this.replaySubject.get(key);
+    } else {
+      replaySubject = new ReplaySubject<T>();
+      this.replaySubject.set(key, replaySubject);
     }
+    this.elements.push(t);
+    replaySubject.next(t);
+    this.allReplaySubjects.next(this.elements);
+    return replaySubject;
   }
 
-  isValid(): boolean {
-    return (new Date().getTime() - this.timeStamp) < this.MAX_CACHE_TIME;
+  getAll(request: () => Observable<T[]>): Observable<T[]> {
+    if (!this.gotAll) {
+      this.gotAll = true;
+      return request().pipe(tap(values => this.allReplaySubjects.next(values)));
+    }
+    return this.allReplaySubjects.asObservable();
   }
 }
+

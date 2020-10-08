@@ -16,9 +16,7 @@ export class HttpService {
   }
 
   constructor(private http: HttpClient) {
-    // const loc = (platformLocation as any).location;
-    // this.baseUrl = 'http://' + loc.hostname + ':8080'; // get base url
-    this.baseUrl = 'http://localhost:2019';
+    this.baseUrl = 'http://localhost:8080';
   }
 
   get defaultHeaders(): any {

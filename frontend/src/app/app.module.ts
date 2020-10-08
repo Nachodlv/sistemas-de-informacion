@@ -1,6 +1,6 @@
 // Angular
 import {BrowserModule} from '@angular/platform-browser';
-import {NgModule} from '@angular/core';
+import {NgModule, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import {AppRoutingModule} from './app-routing.module';
 
 // App Components
@@ -15,6 +15,7 @@ import {ModalModule} from 'ngx-bootstrap/modal';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {HttpClientModule} from '@angular/common/http';
 import {AlertModule} from './alerts';
+import { NgxSpinnerModule } from 'ngx-bootstrap-spinner';
 
 
 @NgModule({
@@ -37,10 +38,12 @@ import {AlertModule} from './alerts';
     FormsModule,
     ReactiveFormsModule,
     HttpClientModule,
-    AlertModule
+    AlertModule,
+    NgxSpinnerModule
   ],
   providers: [],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class AppModule {
 }

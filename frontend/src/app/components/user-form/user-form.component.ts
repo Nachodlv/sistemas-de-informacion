@@ -1,19 +1,22 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {UserService} from '../../services/user.service';
-import {UserRole} from '../../models/user-model';
+import {UserCreationForm, UserRole, UserRoleMapping} from '../../models/user-model';
 import {AlertService} from '../../alerts';
+import {Subscription} from 'rxjs';
 
 @Component({
   selector: 'app-user-form',
   templateUrl: './user-form.component.html',
   styleUrls: ['./user-form.component.scss']
 })
-export class UserFormComponent implements OnInit {
+export class UserFormComponent implements OnInit, OnDestroy {
 
   public registerForm: FormGroup;
   public userRoleTypes: string[] = Object.values(UserRole);
-  public userRoles = UserRole;
+  public userRoleMapping = UserRoleMapping;
+
+  private userSubscription: Subscription;
 
   constructor(private formBuilder: FormBuilder, private userService: UserService, private alertService: AlertService) {
   }
@@ -23,7 +26,7 @@ export class UserFormComponent implements OnInit {
       name: ['', Validators.required],
       password: ['', [Validators.required, Validators.minLength(6)]],
       repeatPassword: [''],
-      role: [UserRole.Picker]
+      role: [UserRole.PICKER]
     }, {validator: this.checkPasswords});
   }
 
@@ -36,7 +39,10 @@ export class UserFormComponent implements OnInit {
   submitForm(): void {
     this.registerForm.markAllAsTouched();
     if (this.registerForm.valid) {
-      this.alertService.success('Success!', {autoClose: true});
+      this.userSubscription = this.userService.save(Object.assign(new UserCreationForm(), this.registerForm.value)).subscribe(user => {
+        this.alertService.success('Usuario creado exitosamente!');
+        console.log(user);
+      }, (_ => this.alertService.error('Ocurrió un error al crear el usuario.')));
     }
   }
 
@@ -46,5 +52,9 @@ export class UserFormComponent implements OnInit {
 
   isRepeatedPasswordInvalid(): boolean {
     return this.registerForm.get('repeatPassword').touched && this.registerForm.hasError('notSame');
+  }
+
+  ngOnDestroy(): void {
+    this.userSubscription?.unsubscribe();
   }
 }
