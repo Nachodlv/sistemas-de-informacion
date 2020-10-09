@@ -1,0 +1,25 @@
+<div>
+  <ngx-datatable
+    class="bootstrap"
+    [rows]="rows"
+    [loadingIndicator]="loadingIndicator"
+    [columnMode]="ColumnMode.force"
+    [headerHeight]="50"
+    rowHeight="auto"
+    [reorderable]="reorderable"
+    [messages]="messages"
+    [footerHeight]="50"
+    [limit]="10"
+  >
+
+    <ngx-datatable-column *ngFor="let column of columns" [name]="column.name"
+                          [prop]="column.prop"></ngx-datatable-column>
+    <ngx-datatable-column *ngFor="let action of actions" [name]="action.tableColumn.name"
+                          [prop]="action.tableColumn.prop" [frozenRight]="action.tableColumn.frozenRight"
+                          [frozenLeft]="action.tableColumn.frozenLeft" [flexGrow]="action.tableColumn.flexGrow">
+      <ng-template let-row="row" ngx-datatable-cell-template>
+        <fa-icon class="action-icon" [icon]="action.icon" size="lg" (click)="action.action(row)"></fa-icon>
+      </ng-template>
+    </ngx-datatable-column>
+  </ngx-datatable>
+</div>

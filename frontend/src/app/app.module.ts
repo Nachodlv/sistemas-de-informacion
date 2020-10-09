@@ -6,6 +6,7 @@ import {AppRoutingModule} from './app-routing.module';
 // App Components
 import {AppComponent} from './app.component';
 import {UserFormComponent} from './components/user-form/user-form.component';
+import { DataTableComponent } from './components/data-table/data-table.component';
 
 // Ngx Bootstrap
 import {ButtonsModule} from 'ngx-bootstrap/buttons';
@@ -16,6 +17,10 @@ import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {HttpClientModule} from '@angular/common/http';
 import {AlertModule} from './alerts';
 import { NgxSpinnerModule } from 'ngx-bootstrap-spinner';
+import { NgxDatatableModule } from '@swimlane/ngx-datatable';
+import { UserListComponent } from './components/user-list/user-list.component';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { SearchUserPipe } from './pipes/search-user.pipe';
 
 
 @NgModule({
@@ -23,6 +28,9 @@ import { NgxSpinnerModule } from 'ngx-bootstrap-spinner';
     // App Components
     AppComponent,
     UserFormComponent,
+    DataTableComponent,
+    UserListComponent,
+    SearchUserPipe,
   ],
   imports: [
 
@@ -39,7 +47,9 @@ import { NgxSpinnerModule } from 'ngx-bootstrap-spinner';
     ReactiveFormsModule,
     HttpClientModule,
     AlertModule,
-    NgxSpinnerModule
+    NgxSpinnerModule,
+    NgxDatatableModule,
+    FontAwesomeModule
   ],
   providers: [],
   bootstrap: [AppComponent],

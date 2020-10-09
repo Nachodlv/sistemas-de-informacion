@@ -5,6 +5,7 @@ import {UserCreationForm, UserRole, UserRoleMapping} from '../../models/user-mod
 import {AlertService} from '../../alerts';
 import {Subscription} from 'rxjs';
 import {NgxSpinnerService} from 'ngx-bootstrap-spinner';
+import {Router} from '@angular/router';
 
 @Component({
   selector: 'app-user-form',
@@ -22,7 +23,7 @@ export class UserFormComponent implements OnInit, OnDestroy {
   constructor(private formBuilder: FormBuilder,
               private userService: UserService,
               private alertService: AlertService,
-              private ngxSpinner: NgxSpinnerService) {
+              private ngxSpinner: NgxSpinnerService, private router: Router) {
   }
 
   ngOnInit(): void {
@@ -45,8 +46,10 @@ export class UserFormComponent implements OnInit, OnDestroy {
     this.ngxSpinner.show();
     if (this.registerForm.valid) {
       this.userSubscription = this.userService.save(Object.assign(new UserCreationForm(), this.registerForm.value)).subscribe(user => {
-        this.alertService.success('Usuario creado exitosamente!');
         this.ngxSpinner.hide();
+        this.router.navigate(['user']).then(() => {
+          this.alertService.success('Usuario creado exitosamente!');
+        });
       }, (_ => {
         this.alertService.error('Ocurrió un error al crear el usuario.');
         this.ngxSpinner.hide();

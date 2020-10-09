@@ -1,45 +1,54 @@
-﻿﻿import {Observable, ReplaySubject, Subject} from 'rxjs';
+﻿﻿import {BehaviorSubject, Observable, ReplaySubject, Subject} from 'rxjs';
 import {filter, startWith, switchMap, tap} from 'rxjs/operators';
 
-export class CachedReplaySubject<U extends { toString(): string }, T> {
+export class CachedReplaySubject<U extends { toString(): string, }, T extends { id: U }> {
 
-  protected replaySubject = new Map<U, ReplaySubject<T>>();
-  private allReplaySubjects = new ReplaySubject<T[]>();
+  protected behaviourSubjects = new Map<U, BehaviorSubject<T>>();
+  private allBehavioursSubjects = new BehaviorSubject<T[]>([]);
   private elements: T[] = [];
   private gotAll = false;
 
   get(key: U, request: () => Observable<T>): Observable<T> {
-    if (this.replaySubject.has(key)) {
-      return this.replaySubject.get(key).asObservable();
+    if (this.behaviourSubjects.has(key)) {
+      return this.behaviourSubjects.get(key).asObservable();
     }
-    const reloader$ = new ReplaySubject<T>();
-    this.replaySubject.set(key, reloader$);
+    const reloader$ = new BehaviorSubject<T>(undefined);
+    this.behaviourSubjects.set(key, reloader$);
     request().pipe(tap(t => {
       this.elements.push(t);
     })).subscribe(t => reloader$.next(t));
     return reloader$.asObservable().pipe(filter(data => !!data));
   }
 
-  addValue(key: U, t: T): Observable<T> {
-    let replaySubject: ReplaySubject<T>;
-    if (this.replaySubject.has(key)) {
-      replaySubject = this.replaySubject.get(key);
+  addValue(t: T): Observable<T> {
+    let replaySubject: BehaviorSubject<T>;
+    if (this.behaviourSubjects.has(t.id)) {
+      replaySubject = this.behaviourSubjects.get(t.id);
+      replaySubject.next(t);
     } else {
-      replaySubject = new ReplaySubject<T>();
-      this.replaySubject.set(key, replaySubject);
+      replaySubject = new BehaviorSubject<T>(t);
+      this.behaviourSubjects.set(t.id, replaySubject);
     }
     this.elements.push(t);
-    replaySubject.next(t);
-    this.allReplaySubjects.next(this.elements);
+    this.allBehavioursSubjects.next(this.elements);
     return replaySubject;
+  }
+
+  deleteValue(t: T): void {
+    this.elements = this.elements.filter(e => e.id !== t.id);
+    this.behaviourSubjects.delete(t.id);
+    this.allBehavioursSubjects.next(this.elements);
   }
 
   getAll(request: () => Observable<T[]>): Observable<T[]> {
     if (!this.gotAll) {
       this.gotAll = true;
-      return request().pipe(tap(values => this.allReplaySubjects.next(values)));
+      request().subscribe(values => {
+        this.elements = values;
+        this.allBehavioursSubjects.next(values);
+      });
     }
-    return this.allReplaySubjects.asObservable();
+    return this.allBehavioursSubjects.asObservable();
   }
 }
 

@@ -1,5 +1,9 @@
 ﻿export class User {
-  constructor(public id: string, public name: string, public role: UserRole) {
+
+  public roleToShow: string;
+
+  constructor(public id: number, public name: string, public role: UserRole) {
+    this.roleToShow = UserRoleMapping[role];
   }
 
   static fromJson(json: any): User {

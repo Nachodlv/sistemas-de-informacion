@@ -1,0 +1,9 @@
+<div id="user-list">
+  <h1>Usuarios</h1>
+  <div id="input-container" class="form-group row p-2">
+    <input placeholder="Buscar usuario" type="text" class="form-control col-7" id="nameInput" [(ngModel)]="searchInput">
+    <button type="submit" class="btn btn-primary col-auto" [routerLink]="'create'">Crear Usuario</button>
+  </div>
+  <app-data-table [columns]="columns" [rows]="users$ | async | searchUser: searchInput"
+                  [actions]="actions"></app-data-table>
+</div>
