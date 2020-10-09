@@ -34,9 +34,9 @@ export class CachedReplaySubject<U extends { toString(): string, }, T extends { 
     return replaySubject;
   }
 
-  deleteValue(t: T): void {
-    this.elements = this.elements.filter(e => e.id !== t.id);
-    this.behaviourSubjects.delete(t.id);
+  deleteValue(key: U): void {
+    this.elements = this.elements.filter(e => e.id !== key);
+    this.behaviourSubjects.delete(key);
     this.allBehavioursSubjects.next(this.elements);
   }
 

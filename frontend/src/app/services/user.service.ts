@@ -3,7 +3,7 @@ import {CachedReplaySubject} from './storage/CachedReplaySubject';
 import {User, UserCreationForm, UserRole} from '../models/user-model';
 import {Observable, of} from 'rxjs';
 import {HttpService} from './http.service';
-import {map, switchMap} from 'rxjs/operators';
+import {map, switchMap, tap} from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
@@ -22,8 +22,11 @@ export class UserService {
       switchMap(user => this.usersCached.addValue(user)));
   }
 
-  deleteUser(user: User): Observable<void> {
-    return of(this.usersCached.deleteValue(user));
+  deleteUser(userId: number): Observable<boolean> {
+    return this.http.delete(`${this.url}/${userId}`).pipe(
+      tap((_) => this.usersCached.deleteValue(userId)),
+      map((response) => response.body)
+    );
   }
 
   getAll(): Observable<User[]> {

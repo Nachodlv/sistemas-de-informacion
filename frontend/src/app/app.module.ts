@@ -7,6 +7,7 @@ import {AppRoutingModule} from './app-routing.module';
 import {AppComponent} from './app.component';
 import {UserFormComponent} from './components/user-form/user-form.component';
 import { DataTableComponent } from './components/data-table/data-table.component';
+import {ConfirmModalComponent} from './services/confirm-modal.service';
 
 // Ngx Bootstrap
 import {ButtonsModule} from 'ngx-bootstrap/buttons';
@@ -31,6 +32,7 @@ import { SearchUserPipe } from './pipes/search-user.pipe';
     DataTableComponent,
     UserListComponent,
     SearchUserPipe,
+    ConfirmModalComponent
   ],
   imports: [
 
