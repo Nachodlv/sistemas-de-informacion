@@ -4,6 +4,7 @@ import com.group3.infsys.model.User;
 import com.group3.infsys.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -30,5 +31,10 @@ public class UserServiceImpl implements UserService {
         boolean exists = userRepository.existsById(id);
         if (exists) userRepository.deleteById(id);
         return exists;
+    }
+
+    @Override
+    public List<User> getAllUsers() {
+        return userRepository.findAll();
     }
 }
