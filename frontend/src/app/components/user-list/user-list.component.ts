@@ -1,5 +1,5 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import {Observable, Subscription} from 'rxjs';
+import {Observable, Subscription, throwError} from 'rxjs';
 import {User} from '../../models/user-model';
 import {UserService} from '../../services/user.service';
 import {TableColumn} from '@swimlane/ngx-datatable';
@@ -8,6 +8,7 @@ import {faTrashAlt} from '@fortawesome/free-regular-svg-icons';
 import {NgxSpinnerService} from 'ngx-bootstrap-spinner';
 import {AlertService} from '../../alerts';
 import {ConfirmModalService} from '../../services/confirm-modal.service';
+import {catchError, tap} from 'rxjs/operators';
 
 @Component({
   selector: 'app-user-list',
@@ -30,7 +31,14 @@ export class UserListComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.users$ = this.userService.getAll();
+    this.spinnerService.show();
+    this.users$ = this.userService.getAll().pipe(
+      tap(_ => this.spinnerService.hide()),
+      catchError(e => {
+        this.alertService.error('Ocurrió un error al obtener a los usuarios');
+        return throwError(e);
+      })
+    );
   }
 
   private showDeleteAlert(user: User): void {
