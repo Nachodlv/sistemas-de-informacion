@@ -39,7 +39,7 @@ public class CustomUserDetailsService implements UserDetailsService {
     }
 
     private Collection<GrantedAuthority> getAuthorities(Role role) {
-        return Stream.of(new SimpleGrantedAuthority(role.toString()))
+        return Stream.of(new SimpleGrantedAuthority(String.format("ROLE_%s", role.toString())))
                 .collect(Collectors.toList());
     }
 }

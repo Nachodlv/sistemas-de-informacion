@@ -3,6 +3,7 @@ package com.group3.infsys.controller;
 import com.group3.infsys.model.User;
 import com.group3.infsys.service.UserService;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
@@ -24,6 +25,7 @@ public class UserController {
     }
 
     @PostMapping()
+    @PreAuthorize("hasRole('ROLE_ASSIGNER')")
     public User addUser(@RequestBody User user) {
         final Optional<User> optionalUser = userService.getUserByUsername(user.getUsername());
         if (optionalUser.isPresent())
@@ -33,6 +35,7 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasRole('ROLE_ASSIGNER')")
     public User getUser(@PathVariable("id") long id) {
         Optional<User> user = userService.getUser(id);
         if (user.isPresent()) return user.get();
@@ -41,11 +44,13 @@ public class UserController {
     }
 
     @GetMapping
+    @PreAuthorize("hasRole('ROLE_ASSIGNER')")
     public List<User> getAllUsers() {
         return userService.getAllUsers();
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ROLE_ASSIGNER')")
     public boolean deleteUser(@PathVariable("id") long id) {
         return userService.deleteUser(id);
     }
