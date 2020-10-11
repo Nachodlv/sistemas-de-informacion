@@ -25,6 +25,9 @@ public class UserController {
 
     @PostMapping()
     public User addUser(@RequestBody User user) {
+        final Optional<User> optionalUser = userService.getUserByUsername(user.getUsername());
+        if (optionalUser.isPresent())
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Username already in use");
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         return userService.addUser(user);
     }

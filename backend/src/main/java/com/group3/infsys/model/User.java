@@ -3,6 +3,7 @@ package com.group3.infsys.model;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 
 @Entity
 public class User {
@@ -11,17 +12,24 @@ public class User {
     @GeneratedValue
     private Long id;
 
+    @NotNull
+    private String username;
+
+    @NotNull
     private String name;
 
+    @NotNull
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
 
+    @NotNull
     @Enumerated(EnumType.STRING)
     private Role role;
 
     public User() {}
 
-    public User(String name, String password, Role role) {
+    public User(String username, String name, String password, Role role) {
+        this.username = username;
         this.name = name;
         this.password = password;
         this.role = role;
@@ -33,6 +41,14 @@ public class User {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public String getName() {

@@ -13,6 +13,8 @@ public interface UserService {
 
     Optional<User> getUser(long id);
 
+    Optional<User> getUserByUsername(String username);
+
     boolean deleteUser(long id);
 
     List<User> getAllUsers();
