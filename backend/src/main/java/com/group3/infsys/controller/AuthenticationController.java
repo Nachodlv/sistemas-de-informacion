@@ -30,7 +30,7 @@ public class AuthenticationController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody LoginRequest request) throws Exception {
+    public ResponseEntity<Void> login(@RequestBody LoginRequest request) throws Exception {
         try {
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
         } catch (DisabledException e) {
@@ -46,9 +46,9 @@ public class AuthenticationController {
         String token = jwtTokenUtil.generateToken(userDetails);
 
         HttpHeaders responseHeaders = new HttpHeaders();
-        responseHeaders.set("Authorization", String.format("Bearer %s", token)); // Should we add Bearer?
+        responseHeaders.set("Authorization", String.format("Bearer %s", token));
         return ResponseEntity.ok()
                 .headers(responseHeaders)
-                .body("Logged in successfully");
+                .build();
     }
 }
