@@ -1,0 +1,22 @@
+<div id="login" class="row p-sm-0 p-3">
+  <div id="login-container" class="col-lg-4 col-md-5 col-sm-6">
+    <h1 class="pb-4">Inicio de sesión</h1>
+    <form (ngSubmit)="submitForm()" [formGroup]="loginForm">
+      <div class="form-group">
+        <input placeholder="Usuario" type="text" class="form-control" id="userInput" formControlName="username"
+               [ngClass]="{'is-invalid': isInputInvalid('required', 'username')}" required>
+        <div class="invalid-feedback" *ngIf="isInputInvalid('required', 'username')">
+          El usuario es requerido
+        </div>
+      </div>
+      <div class="form-group pb-3">
+        <input placeholder="Contraseña" type="password" class="form-control" id="passwordInput" formControlName="password"
+               [ngClass]="{'is-invalid': isInputInvalid('required', 'password')}" required>
+        <div class="invalid-feedback" *ngIf="isInputInvalid('required', 'password')">
+          La contraseña es requerida
+        </div>
+      </div>
+      <button type="submit" class="btn btn-primary" [disabled]="loginForm.invalid">Iniciar Sesión</button>
+    </form>
+  </div>
+</div>

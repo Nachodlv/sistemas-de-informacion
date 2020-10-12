@@ -1,0 +1,22 @@
+version: '3.1'
+
+services:
+
+  db:
+    image: mysql:5.7
+    restart: always
+    volumes:
+      - db_data:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: infsys
+      MYSQL_DATABASE: wms
+      MYSQL_USER: root
+      MYSQL_PASSWORD: infsys
+      MYSQL_ROOT_HOST: localhost
+    ports:
+      - '3306:3306'
+    expose:
+      - '3306'
+
+volumes:
+  db_data: {}

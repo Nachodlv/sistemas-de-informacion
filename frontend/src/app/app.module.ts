@@ -22,6 +22,7 @@ import { NgxDatatableModule } from '@swimlane/ngx-datatable';
 import { UserListComponent } from './components/user-list/user-list.component';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { SearchUserPipe } from './pipes/search-user.pipe';
+import { LoginComponent } from './components/login/login.component';
 
 
 @NgModule({
@@ -32,7 +33,8 @@ import { SearchUserPipe } from './pipes/search-user.pipe';
     DataTableComponent,
     UserListComponent,
     SearchUserPipe,
-    ConfirmModalComponent
+    ConfirmModalComponent,
+    LoginComponent
   ],
   imports: [
 
