@@ -30,21 +30,9 @@ export class UserService {
   }
 
   getAll(): Observable<User[]> {
-    return this.usersCached.getAll(() => of([
-      new User(1, 'Nacho', UserRole.PICKER),
-      new User(2, 'Eduardo', UserRole.ASSIGNER),
-      new User(3, 'Juan', UserRole.DISPATCHER),
-      new User(3, 'Juan', UserRole.DISPATCHER),
-      new User(4, 'Juan', UserRole.DISPATCHER),
-      new User(5, 'Juan', UserRole.DISPATCHER),
-      new User(6, 'Juan', UserRole.DISPATCHER),
-      new User(7, 'Juan', UserRole.DISPATCHER),
-      new User(8, 'Juan', UserRole.DISPATCHER),
-      new User(9, 'Juan', UserRole.DISPATCHER),
-      new User(10, 'Juan', UserRole.DISPATCHER),
-      new User(11, 'Juan', UserRole.DISPATCHER),
-      new User(12, 'Juan', UserRole.DISPATCHER),
-      new User(13, 'Juan', UserRole.DISPATCHER),
-    ]));
+    return this.usersCached.getAll(() =>
+      this.http.get(this.url).pipe(
+        map(response => response.body.map(user => User.fromJson(user)))
+      ));
   }
 }

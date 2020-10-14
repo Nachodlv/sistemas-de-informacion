@@ -3,6 +3,14 @@
   <form (ngSubmit)="submitForm()" [formGroup]="registerForm" class="row">
     <div class="col-md-7">
       <div class="form-group">
+        <label for="nameInput">Usuario</label>
+        <input type="text" class="form-control" id="usernameInput" formControlName="username"
+               [ngClass]="{'is-invalid': isInputInvalid('required', 'username')}" required>
+        <div class="invalid-feedback" *ngIf="isInputInvalid('required', 'username')">
+          El usuario es requerido
+        </div>
+      </div>
+      <div class="form-group">
         <label for="nameInput">Nombre</label>
         <input type="text" class="form-control" id="nameInput" formControlName="name"
                [ngClass]="{'is-invalid': isInputInvalid('required', 'name')}" required>
