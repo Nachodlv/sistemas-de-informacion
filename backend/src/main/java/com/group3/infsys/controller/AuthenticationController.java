@@ -1,17 +1,23 @@
 package com.group3.infsys.controller;
 
 import com.group3.infsys.dto.LoginRequest;
+import com.group3.infsys.dto.RoleResponse;
+import com.group3.infsys.model.Role;
 import com.group3.infsys.security.CustomUserDetailsService;
 import com.group3.infsys.security.JwtTokenUtil;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.*;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
+
+import javax.servlet.http.HttpServletRequest;
+import java.util.Iterator;
 
 @CrossOrigin
 @RestController
@@ -50,5 +56,26 @@ public class AuthenticationController {
         return ResponseEntity.ok()
                 .headers(responseHeaders)
                 .build();
+    }
+
+    /**
+     * Returns the associated role for the user.
+     */
+    @GetMapping("/role")
+    public ResponseEntity<RoleResponse> role() {
+        Iterator<? extends GrantedAuthority> authorities = SecurityContextHolder
+                .getContext()
+                .getAuthentication()
+                .getAuthorities().iterator();
+        if (!authorities.hasNext()){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No role found for the provided user");
+        }
+        String roleName = authorities.next().getAuthority().split("_")[1];
+        try {
+            Role role = Role.valueOf(roleName);
+            return ResponseEntity.ok().body(new RoleResponse(role));
+        } catch (IllegalArgumentException e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Invalid role name");
+        }
     }
 }
