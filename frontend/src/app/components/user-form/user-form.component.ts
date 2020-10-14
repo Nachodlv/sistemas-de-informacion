@@ -28,6 +28,7 @@ export class UserFormComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.registerForm = this.formBuilder.group({
+      username: ['', Validators.required],
       name: ['', Validators.required],
       password: ['', [Validators.required, Validators.minLength(6)]],
       repeatPassword: [''],

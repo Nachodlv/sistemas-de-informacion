@@ -2,17 +2,17 @@
 
   public roleToShow: string;
 
-  constructor(public id: number, public name: string, public role: UserRole) {
+  constructor(public id: number, public name: string, public role: UserRole, public username: string) {
     this.roleToShow = UserRoleMapping[role];
   }
 
   static fromJson(json: any): User {
-    return new User(json.id, json.name, json.role);
+    return new User(json.id, json.name, json.role, json.username);
   }
 }
 
 export class UserCreationForm {
-  constructor(public name: string = '', public role: UserRole = UserRole.PICKER) {
+  constructor(public name: string = '', public role: UserRole = UserRole.PICKER, public username: string) {
   }
 }
 

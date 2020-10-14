@@ -1,34 +1,22 @@
 ﻿import {Injectable} from '@angular/core';
-import {HttpClient, HttpHeaders, HttpResponse} from '@angular/common/http';
+import {HttpClient, HttpHeaders, HttpParams, HttpResponse} from '@angular/common/http';
 import {Observable} from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class HttpService {
+  static USER_KEY = 'sysinf-user';
 
-  private DEFAULT_HEADERS = {'Content-Type': 'application/json'}; // in content-role-interceptor
+  private DEFAULT_HEADERS = {'Content-Type': 'application/json'};
 
-  private readonly baseUrl: string;
+  private readonly baseUrl = 'http://localhost:8080';
 
   private static get authToken(): string {
-    return localStorage.getItem('user');
+    return localStorage.getItem(this.USER_KEY);
   }
 
   constructor(private http: HttpClient) {
-    this.baseUrl = 'http://localhost:8080';
-  }
-
-  get defaultHeaders(): any {
-    return this.DEFAULT_HEADERS;
-  }
-
-  get defaultOptions(): any {
-    return {headers: this.defaultHeaders};
-  }
-
-  get defaultHttp(): HttpClient {
-    return this.http;
   }
 
   public get(url: string, options?: any, ignoreBaseUrl?: boolean): Observable<HttpResponse<any>> {
@@ -68,11 +56,11 @@ export class HttpService {
   }
 
   private requestOptions(options?: any): HttpHeaders {
-    const authHeader = {Authorization: `Bearer ${HttpService.authToken}`};
-    if (options) {
-      return new HttpHeaders(Object.assign(options, authHeader));
+    const token = HttpService.authToken;
+    if (token) {
+      return new HttpHeaders({...this.DEFAULT_HEADERS, Authorization: `Bearer ${HttpService.authToken}`});
     } else {
-      return new HttpHeaders(Object.assign(this.DEFAULT_HEADERS, authHeader));
+      return new HttpHeaders({...this.DEFAULT_HEADERS});
     }
   }
 }
