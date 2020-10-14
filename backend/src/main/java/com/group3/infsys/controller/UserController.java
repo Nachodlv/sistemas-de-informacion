@@ -4,6 +4,7 @@ import com.group3.infsys.model.User;
 import com.group3.infsys.service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
@@ -52,6 +53,14 @@ public class UserController {
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ROLE_ASSIGNER')")
     public boolean deleteUser(@PathVariable("id") long id) {
+        String username = SecurityContextHolder
+                .getContext()
+                .getAuthentication()
+                .getName();
+        final Optional<User> optionalUser = userService.getUserByUsername(username);
+        if (optionalUser.isPresent() && optionalUser.get().getId() == id) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "A user cannot delete itself");
+        }
         return userService.deleteUser(id);
     }
 }
