@@ -2,6 +2,7 @@ package com.group3.infsys.security;
 
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.SignatureException;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -46,6 +47,8 @@ public class JwtRequestFilter extends OncePerRequestFilter {
                 System.out.println("JWT Token has expired");
             } catch (MalformedJwtException e) {
                 System.out.println("Malformed JWT Token");
+            } catch (SignatureException e) {
+                System.out.println("Invalid JWT signature");
             }
         } else {
             logger.warn("JWT Token does not begin with Bearer String");
