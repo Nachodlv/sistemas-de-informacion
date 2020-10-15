@@ -1,4 +1,14 @@
 #user-list {
+  #title-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+
+    #logout-button {
+      height: 50%;
+    }
+  }
   #input-container {
     justify-content: space-between;
   }

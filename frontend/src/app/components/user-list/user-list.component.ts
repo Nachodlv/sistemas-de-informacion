@@ -9,6 +9,7 @@ import {NgxSpinnerService} from 'ngx-bootstrap-spinner';
 import {AlertService} from '../../alerts';
 import {ConfirmModalService} from '../../services/confirm-modal.service';
 import {catchError, tap} from 'rxjs/operators';
+import {HttpService} from '../../services/http.service';
 
 @Component({
   selector: 'app-user-list',
@@ -19,7 +20,7 @@ export class UserListComponent implements OnInit, OnDestroy {
 
   users$: Observable<User[]>;
   searchInput = '';
-  columns: TableColumn[] = [{name: '#', prop: 'id'}, {name: 'Name'}, {name: 'Role', prop: 'roleToShow'}];
+  columns: TableColumn[] = [{name: '#', prop: 'id'}, {name: 'Username'}, {name: 'Name'}, {name: 'Role', prop: 'roleToShow'}];
   actions: TableAction<User>[] = [new TableAction<User>({name: 'Delete', flexGrow: 3}, faTrashAlt, (user) => this.showDeleteAlert(user))];
 
   private subscriptions: Subscription[] = [];
@@ -59,8 +60,13 @@ export class UserListComponent implements OnInit, OnDestroy {
       } else {
         this.alertService.error('Usuario no existente');
       }
-    }, (_) => {
-      this.alertService.error('Ocurrió un error al eliminar el usuario');
+    }, (error) => {
+      this.spinnerService.hide();
+      if (error.status === 409) {
+        this.alertService.error('Ocurrió un error. No es posible eliminarse a uno mismo');
+      } else {
+        this.alertService.error('Ocurrió un error al eliminar el usuario');
+      }
     }));
   }
 
