@@ -36,7 +36,7 @@ export class LoginComponent implements OnInit, OnDestroy {
 
   submitForm(): void {
     this.spinnerService.show();
-    this.subscription = this.authService.login(this.loginForm.value).subscribe(_ => {
+    this.subscription = this.authService.login(this.loginForm.value).subscribe(role => {
       this.router.navigate(['user']).then(() => this.spinnerService.hide());
     }, (error) => {
       this.spinnerService.hide();

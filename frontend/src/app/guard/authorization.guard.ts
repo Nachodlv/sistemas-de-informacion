@@ -31,7 +31,7 @@ export class AuthorizationGuard implements CanActivate {
         if (!isAuthorized) {
           this.router.navigate(['login']);
         }
-      })
+      }),
     );
   }
 }

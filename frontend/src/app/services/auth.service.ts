@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {User, UserRole} from '../models/user-model';
 import {HttpService} from './http.service';
-import {Observable, throwError} from 'rxjs';
+import {Observable, Subject, throwError} from 'rxjs';
 import {map, tap} from 'rxjs/operators';
 import jwt_decode from 'jwt-decode';
 import {UserService} from './user.service';
@@ -33,13 +33,21 @@ export class AuthService {
 
   getLoggedUser(): Observable<User> {
     if (!this.loggedUser) {
-      throwError('No logged user!');
+      return throwError('No logged user!');
     }
     return this.userService.getUser(this.loggedUser);
   }
 
   isAuthorized(allowedRoles: string[]): Observable<boolean> {
-    return this.getRole().pipe(map(userRole => allowedRoles.includes(userRole)));
+    const subject = new Subject<boolean>();
+    const subscription = this.getRole().subscribe(role => {
+      subject.next(allowedRoles.includes(role));
+      subscription.unsubscribe();
+    }, _ => {
+      subject.next(false);
+      subscription.unsubscribe();
+    });
+    return subject.asObservable();
   }
 
   private getRole(): Observable<UserRole> {
