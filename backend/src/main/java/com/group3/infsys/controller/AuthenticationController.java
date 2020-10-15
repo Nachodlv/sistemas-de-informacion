@@ -3,8 +3,10 @@ package com.group3.infsys.controller;
 import com.group3.infsys.dto.LoginRequest;
 import com.group3.infsys.dto.RoleResponse;
 import com.group3.infsys.model.Role;
+import com.group3.infsys.model.User;
 import com.group3.infsys.security.CustomUserDetailsService;
 import com.group3.infsys.security.JwtTokenUtil;
+import com.group3.infsys.service.UserService;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,7 +18,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.Iterator;
 
 @CrossOrigin
@@ -24,13 +25,16 @@ import java.util.Iterator;
 public class AuthenticationController {
 
     private final UserDetailsService userDetailsService;
+    private final UserService userService;
     private final JwtTokenUtil jwtTokenUtil;
     private final AuthenticationManager authenticationManager;
 
     public AuthenticationController(CustomUserDetailsService userDetailsService,
+                                    UserService userService,
                                     JwtTokenUtil jwtTokenUtil,
                                     AuthenticationManager authenticationManager) {
         this.userDetailsService = userDetailsService;
+        this.userService = userService;
         this.jwtTokenUtil = jwtTokenUtil;
         this.authenticationManager = authenticationManager;
     }
@@ -49,7 +53,10 @@ public class AuthenticationController {
 
         UserDetails userDetails = userDetailsService.loadUserByUsername(request.getUsername());
 
-        String token = jwtTokenUtil.generateToken(userDetails);
+        User user = userService.getUserByUsername(userDetails.getUsername())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+
+        String token = jwtTokenUtil.generateToken(userDetails, user);
 
         HttpHeaders responseHeaders = new HttpHeaders();
         responseHeaders.set("Authorization", String.format("Bearer %s", token));

@@ -1,5 +1,6 @@
 package com.group3.infsys.security;
 
+import com.group3.infsys.model.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -60,8 +61,10 @@ public class JwtTokenUtil {
     /**
      * Generates a new token for the specified user.
      */
-    public String generateToken(UserDetails userDetails) {
-        Map<String, Object> claims = new HashMap<>(); // What are claims for?
+    public String generateToken(UserDetails userDetails, User user) {
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("id", user.getId());
+        claims.put("role", user.getRole().toString());
         return doGenerateToken(claims, userDetails.getUsername());
     }
 
