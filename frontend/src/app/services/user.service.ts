@@ -29,6 +29,12 @@ export class UserService {
     );
   }
 
+  getUser(userId: number): Observable<User> {
+    return this.usersCached.get(userId,
+      () => this.http.get(`${this.url}/${userId}`).pipe(map(response => User.fromJson(response.body)
+      )));
+  }
+
   getAll(): Observable<User[]> {
     return this.usersCached.getAll(() =>
       this.http.get(this.url).pipe(
