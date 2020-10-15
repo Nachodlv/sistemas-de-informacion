@@ -1,5 +1,8 @@
 <div id="user-list">
-  <h1>Usuarios</h1>
+  <div id="title-container">
+    <h1>Usuarios</h1>
+    <app-logout-button id="logout-button"></app-logout-button>
+  </div>
   <div id="input-container" class="form-group row p-2">
     <input placeholder="Buscar usuario" type="text" class="form-control col-7" id="nameInput" [(ngModel)]="searchInput">
     <button type="submit" class="btn btn-primary col-auto" [routerLink]="'create'">Crear Usuario</button>

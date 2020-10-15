@@ -12,7 +12,7 @@
 }
 
 export class UserCreationForm {
-  constructor(public name: string = '', public role: UserRole = UserRole.PICKER, public username: string) {
+  constructor(public name: string = '', public role: UserRole = UserRole.PICKER, public username: string = '') {
   }
 }
 

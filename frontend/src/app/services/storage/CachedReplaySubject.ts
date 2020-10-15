@@ -46,7 +46,7 @@ export class CachedReplaySubject<U extends { toString(): string, }, T extends { 
       request().subscribe(values => {
         this.elements = values;
         this.allBehavioursSubjects.next(values);
-      });
+      }, _ => this.gotAll = false);
     }
     return this.allBehavioursSubjects.asObservable();
   }
