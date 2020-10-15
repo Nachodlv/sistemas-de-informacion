@@ -1,4 +1,4 @@
-﻿﻿import {BehaviorSubject, Observable, ReplaySubject, Subject} from 'rxjs';
+﻿import {BehaviorSubject, Observable, ReplaySubject, Subject} from 'rxjs';
 import {filter, startWith, switchMap, tap} from 'rxjs/operators';
 
 export class CachedReplaySubject<U extends { toString(): string, }, T extends { id: U }> {
@@ -12,12 +12,16 @@ export class CachedReplaySubject<U extends { toString(): string, }, T extends { 
     if (this.behaviourSubjects.has(key)) {
       return this.behaviourSubjects.get(key).asObservable();
     }
-    const reloader$ = new BehaviorSubject<T>(undefined);
-    this.behaviourSubjects.set(key, reloader$);
-    request().pipe(tap(t => {
+    const behaviorSubject = new BehaviorSubject<T>(undefined);
+    this.behaviourSubjects.set(key, behaviorSubject);
+    const subscription = request().pipe(tap(t => {
       this.elements.push(t);
-    })).subscribe(t => reloader$.next(t));
-    return reloader$.asObservable().pipe(filter(data => !!data));
+    })).subscribe(
+      t => {
+        behaviorSubject.next(t);
+        subscription.unsubscribe();
+      }, _ => subscription.unsubscribe());
+    return behaviorSubject.asObservable().pipe(filter(data => !!data));
   }
 
   addValue(t: T): Observable<T> {
@@ -43,10 +47,14 @@ export class CachedReplaySubject<U extends { toString(): string, }, T extends { 
   getAll(request: () => Observable<T[]>): Observable<T[]> {
     if (!this.gotAll) {
       this.gotAll = true;
-      request().subscribe(values => {
+      const subscription = request().subscribe(values => {
         this.elements = values;
         this.allBehavioursSubjects.next(values);
-      }, _ => this.gotAll = false);
+        subscription.unsubscribe();
+      }, _ => {
+        this.gotAll = false;
+        subscription.unsubscribe();
+      });
     }
     return this.allBehavioursSubjects.asObservable();
   }
